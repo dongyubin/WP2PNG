@@ -3,6 +3,15 @@
     <header>
       <div class="harea">
         <el-input v-model="eTitle" @change="getPosts('2', eid)" placeholder="请输入标题"></el-input>
+        <el-select v-if="eImage" v-model="value" @change="changeUrl" placeholder="请选择">
+          <el-option
+            v-for="item in urlOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-input v-model="eImage" @change="getPosts('2', eid)" placeholder="请输入图片地址"></el-input>
         <el-input type="textarea" v-model="eRendered" @change="getPosts('2', eid)" placeholder="请输入文章描述"></el-input>
       </div>
       <div class="hbtns">
@@ -19,7 +28,7 @@
       
     </header>
     <div class="body">
-      <content-com :eTitle="eTitle" :eRendered="eRendered" :contentRendered="contentRendered" :link="link" :key="key"></content-com>
+      <content-com :eTitle="eTitle" :eRendered="eRendered" :eImage="eImage" :link="link" :key="key"></content-com>
       <div class="preview" v-if="previewSwitch">
         <p>图片预览区</p>
         <img ref="previewImg" alt="" srcset="">
@@ -40,6 +49,7 @@ export default {
     return { 
       eid: '',
       eTitle: '',
+      eImage: '',
       eRendered: '',
       contentRendered: '',
       excerptRendered: '',
@@ -47,7 +57,12 @@ export default {
       idSwitch: false,
       previewSwitch: false,
       messageList: [],
-      key: 0
+      key: 0,
+      urlOptions: [{
+        value: 'https://gcore.jsdelivr.net/gh/dongyubin',
+        label: 'gcore'
+      }],
+      value: ''
     }
   },
   components:{
@@ -68,11 +83,12 @@ export default {
       }else{
         posts().then(res=>{
           res.forEach(element => {
-            this.contentRendered = this.getImages(element.content.rendered);
+            // this.contentRendered = this.getImages(element.content.rendered);
             // this.titleRendered = element.title.rendered;
             if(type=='1'){
               this.eTitle = element.title.rendered;
               this.eRendered = element.excerpt.rendered;
+              this.eImage = this.getImages(element.content.rendered);
             }
             this.link = element.link;
           });
@@ -82,8 +98,9 @@ export default {
     },
     getPostContext(){
       this.previewSwitch = false
+      this.value = ''
       context({id: this.eid}).then(res=>{
-          this.contentRendered = this.getImages(res.content.rendered);
+          this.eImage = this.getImages(res.content.rendered);
           this.eTitle = res.title.rendered;
           this.eRendered = res.excerpt.rendered;
           this.link = res.link;
@@ -104,6 +121,9 @@ export default {
           Canvas2Image.saveAsImage(canvas, canvas.width, canvas.height, 'png',name)
         }
       })
+    },
+    changeUrl(){
+      this.eImage = this.value + this.eImage
     },
     getImages (str){
       //匹配图片（g表示匹配所有结果i表示区分大小写）

@@ -4,7 +4,7 @@
           <div class="content">
             <h1>{{ eTitle }}</h1>
             <div class="headerImg">
-              <img :src="contentRendered" alt="">
+              <img :src="eImage" alt="">
             </div>
             <p>{{ eRendered }}</p>
             <div class="qrcode">
@@ -31,6 +31,10 @@ export default {
       type: String,
       default: ''
     },
+    eImage: {
+      type: String,
+      default: ''
+    },
     link: {
       type: String,
       default: ''
@@ -41,7 +45,7 @@ export default {
 <style lang="less" scoped>
 .message{
       display: flex;
-      width: 28%;
+      width: 20%;
       height: auto;
       box-sizing: border-box;
       text-align: center;
@@ -62,6 +66,7 @@ export default {
           p{
             padding: 10px 30px;
             font-weight: 700;
+            letter-spacing: 1px;
           }
         }
         img{
